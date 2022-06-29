@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/at04/デスクトップ/ai-server-ssl-h/build/_deps/nnabla-subbuild/CMakeFiles/nnabla-populate"
+		},
+		{
+			"file" : "/home/at04/デスクトップ/ai-server-ssl-h/build/_deps/nnabla-subbuild/CMakeFiles/nnabla-populate.rule"
+		},
+		{
+			"file" : "/home/at04/デスクトップ/ai-server-ssl-h/build/_deps/nnabla-subbuild/CMakeFiles/nnabla-populate-complete.rule"
+		},
+		{
+			"file" : "/home/at04/デスクトップ/ai-server-ssl-h/build/_deps/nnabla-subbuild/nnabla-populate-prefix/src/nnabla-populate-stamp/nnabla-populate-install.rule"
+		},
+		{
+			"file" : "/home/at04/デスクトップ/ai-server-ssl-h/build/_deps/nnabla-subbuild/nnabla-populate-prefix/src/nnabla-populate-stamp/nnabla-populate-mkdir.rule"
+		},
+		{
+			"file" : "/home/at04/デスクトップ/ai-server-ssl-h/build/_deps/nnabla-subbuild/nnabla-populate-prefix/src/nnabla-populate-stamp/nnabla-populate-download.rule"
+		},
+		{
+			"file" : "/home/at04/デスクトップ/ai-server-ssl-h/build/_deps/nnabla-subbuild/nnabla-populate-prefix/src/nnabla-populate-stamp/nnabla-populate-update.rule"
+		},
+		{
+			"file" : "/home/at04/デスクトップ/ai-server-ssl-h/build/_deps/nnabla-subbuild/nnabla-populate-prefix/src/nnabla-populate-stamp/nnabla-populate-patch.rule"
+		},
+		{
+			"file" : "/home/at04/デスクトップ/ai-server-ssl-h/build/_deps/nnabla-subbuild/nnabla-populate-prefix/src/nnabla-populate-stamp/nnabla-populate-configure.rule"
+		},
+		{
+			"file" : "/home/at04/デスクトップ/ai-server-ssl-h/build/_deps/nnabla-subbuild/nnabla-populate-prefix/src/nnabla-populate-stamp/nnabla-populate-build.rule"
+		},
+		{
+			"file" : "/home/at04/デスクトップ/ai-server-ssl-h/build/_deps/nnabla-subbuild/nnabla-populate-prefix/src/nnabla-populate-stamp/nnabla-populate-test.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"nnabla-populate"
+		],
+		"name" : "nnabla-populate"
+	}
+}
