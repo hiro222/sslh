@@ -1,0 +1,117 @@
+version: 2.1
+
+executors:
+  build-env:
+    docker:
+      - image: docker.pkg.github.com/kiksworks/docker-build-env/build-env:latest
+        auth:
+          username: $GH_PKG_USERNAME
+          password: $GH_PKG_PASSWORD
+  simplecheck-env:
+    docker:
+      - image: docker.pkg.github.com/kiksworks/docker-build-env/simplecheck-env:latest
+        auth:
+          username: $GH_PKG_USERNAME
+          password: $GH_PKG_PASSWORD
+
+anchors:
+  - &environment-clang
+    CC: clang
+    CXX: clang++
+
+  - &environment-gcc
+    CC: gcc
+    CXX: g++
+
+  - &build
+    executor: build-env
+    steps:
+      - checkout
+      - run:
+          name: Initialize git submodules
+          command: |
+            git submodule sync --recursive 3rd/
+            git submodule update --recursive --init 3rd/
+
+      - run: cmake -S ~/project -B ~/build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON -DENABLE_CODE_COVERAGE=ON -DUSE_SYSTEM_NNABLA=ON
+      - run: cmake --build ~/build -v -j 4
+
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - build
+            - project
+
+  - &filters
+    branches:
+      ignore:
+        - /archives\/.*/
+        - /skip-test\/.*/
+
+jobs:
+  build:
+    <<: *build
+    environment: *environment-clang
+
+  build-gcc:
+    <<: *build
+    environment: *environment-gcc
+
+  test:
+    executor: build-env
+    working_directory: ~/build
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run unit tests
+          environment:
+            LLVM_PROFILE_FILE: /tmp/profile/dump-%p.profraw
+          command: ninja test
+      - run:
+          name: Generating coverage report
+          command: |
+            llvm-profdata merge /tmp/profile/dump-*.profraw -o /tmp/profile/dump.profdata
+            args=()
+            for bin in src/ai_server/libai-server.a test/test_*; do
+              args+=( -object "$bin" )
+            done
+            llvm-cov show -instr-profile /tmp/profile/dump.profdata "${args[@]}" > /tmp/profile/coverage.txt
+      - run:
+          name: Uploading coverage report
+          working_directory: ~/project
+          command: bash <(curl -s https://codecov.io/bash) -f /tmp/profile/coverage.txt || echo 'Codecov upload failed'
+
+  test-gcc:
+    executor: build-env
+    working_directory: ~/build
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: ninja test
+
+  static-validations:
+    executor: simplecheck-env
+    resource_class: small
+    steps:
+      - checkout
+      - run: ./tools/validate.sh
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build:
+          filters: *filters
+      - test:
+          requires:
+            - build
+
+      - static-validations:
+          filters: *filters
+
+      # - build-gcc:
+      #     filters: *filters
+      # - test-gcc:
+      #     requires:
+      #       - build-gcc

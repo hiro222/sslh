@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+import "vision_detection.proto";
+import "vision_geometry.proto";
+
+package ssl_protos.vision;
+
+message Packet {
+  optional Frame detection = 1;
+  optional Geometry geometry = 2;
+}

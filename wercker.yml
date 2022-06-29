@@ -1,0 +1,50 @@
+box:
+  id: docker.pkg.github.com/kiksworks/docker-build-env/build-env
+  tag: latest
+  registry: docker.pkg.github.com
+  username: $GH_PKG_USERNAME
+  password: $GH_PKG_PASSWORD
+
+build:
+  steps:
+    - script:
+      name: create build directory
+      code: |
+        mkdir -p build
+
+    - script:
+      name: initialize git submodules
+      code: |
+        git submodule update --init --recursive
+
+    - script:
+      name: build
+      code: |
+        cd build
+        cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON -DENABLE_CODE_COVERAGE=ON -DUSE_SYSTEM_NNABLA=ON
+        ninja-build -v
+
+    - script:
+      name: unit test
+      code: |
+        cd build
+        ctest --output-on-failure
+
+  after-steps:
+    - slack-notifier:
+      url:  $SLACK_WEBHOOK_URL
+      notify_on: failed
+
+static-validations:
+  steps:
+    - script:
+      name: encoding
+      code: ./tools/validate/encoding.sh
+
+    - script:
+      name: include guard
+      code: ./tools/validate/include_guard.sh
+
+    - script:
+      name: format
+      code: ./tools/validate/format.sh
